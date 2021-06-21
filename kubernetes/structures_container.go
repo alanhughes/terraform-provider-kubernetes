@@ -3,10 +3,11 @@ package kubernetes
 import (
 	"strconv"
 
+	"regexp"
+
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"regexp"
 )
 
 func flattenCapability(in []v1.Capability) []string {
@@ -280,6 +281,8 @@ func flattenContainerVolumeMounts(in []v1.VolumeMount) ([]interface{}, error) {
 		}
 		if v.MountPropagation != nil {
 			m["mount_propagation"] = string(*v.MountPropagation)
+		} else {
+			m["mount_propagation"] = ""
 		}
 		att[i] = m
 	}
@@ -771,7 +774,12 @@ func expandContainerVolumeMounts(in []interface{}) ([]v1.VolumeMount, error) {
 			vmp[i].SubPath = subPath.(string)
 		}
 		if mountPropagation, ok := p["mount_propagation"]; ok {
-			mp := v1.MountPropagationMode(mountPropagation.(string))
+			var mp v1.MountPropagationMode
+			if mountPropagation != nil {
+				mp = v1.MountPropagationMode(mountPropagation.(string))
+			} else {
+				mp = v1.MountPropagationEmpty
+			}
 			vmp[i].MountPropagation = &mp
 		}
 	}

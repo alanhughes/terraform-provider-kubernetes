@@ -1882,6 +1882,8 @@ const (
 	// not receive new mounts from the host or other containers, and filesystems
 	// mounted inside the container won't be propagated to the host or other
 	// containers.
+	// Value is not set
+	MountPropagationEmpty MountPropagationMode = ""
 	// Note that this mode corresponds to "private" in Linux terminology.
 	MountPropagationNone MountPropagationMode = "None"
 	// MountPropagationHostToContainer means that the volume in a container will
